@@ -31,7 +31,7 @@
           var paramData = {
               orderId : orderId,
           }
-           /* String으로 변환 */
+
           var param = JSON.stringify(paramData);
 
           $.ajax({
@@ -40,14 +40,14 @@
               contentType: "application/json",
               data: param,
               beforeSend : function(xhr){
-                  /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+
                   xhr.setRequestHeader(header, token);
               },
               dataType : "json",
               cache   : false,
               success  : function(result, status){
                   alert("주문이 취소 되었습니다.");
-                  /* 알림 내용이 뜬 후 링크로 다시 돌아간다 .*/
+
                   location.href='/orders/' + [[${page}]];
               },
               error : function(jqXHR, status, error){
