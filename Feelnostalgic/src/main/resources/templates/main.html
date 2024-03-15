@@ -102,24 +102,37 @@ $(document).ready(function() {
     });
    $(document).ready(function() {
     var isLoggedIn = localStorage.getItem("isLoggedIn");
-     console.log(isLoggedIn);
-    if (isLoggedIn === "true") {
+    var hideModal = localStorage.getItem("hideModal");
 
+    if (isLoggedIn === "true" || hideModal === "true") {
         $("#myModal").hide();
     } else {
-
         $("#myModal").show();
     }
 });
+
 document.addEventListener('DOMContentLoaded', function() {
     var logoutLink = document.getElementById('logoutLink');
+    var closeBtn = document.getElementsByClassName("close")[0];
+    var hideModalCheckbox = document.getElementById("hideModalCheckbox");
+
     if (logoutLink) {
         logoutLink.addEventListener('click', function(e) {
             e.preventDefault();
-
             localStorage.removeItem('isLoggedIn');
             window.location.href = '/members/logout';
         });
+    }
+
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            if (hideModalCheckbox.checked) {
+                localStorage.setItem("hideModal", "true");
+            } else {
+                localStorage.removeItem("hideModal");
+            }
+            $("#myModal").hide();
+        }
     }
 });
     </script>
@@ -350,6 +363,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
                         <button class="w3-button w3-black w3-section" onclick="modalLoginForm()">Log In</button>
                         <p>Don't have an account? <a href="/members/new">Register here</a>.</p>
+                        <label>
+                            <input type="checkbox" id="hideModalCheckbox"> 하루 동안 보지 않기
+                        </label>
                     </form>
                 </div>
             </div>
