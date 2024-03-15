@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+<title>Feel nostalgic</title>
+<meta charset="UTF-8">
+
+<head>
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<th:block layout:fragment="script">
+  <script th:inline="javascript">
+
+    $(function(){
+           $('.nav-wrap, .content').addClass('sub');
+       });
+
+
+   function cancelOrder(orderId) {
+          var token = $("meta[name='_csrf']").attr("content");
+          var header = $("meta[name='_csrf_header']").attr("content");
+
+          var url = "/order/" + orderId + "/cancel";
+          var paramData = {
+              orderId : orderId,
+          }
+           /* String으로 변환 */
+          var param = JSON.stringify(paramData);
+
+          $.ajax({
+              url: url,
+              type: "POST",
+              contentType: "application/json",
+              data: param,
+              beforeSend : function(xhr){
+                  /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                  xhr.setRequestHeader(header, token);
+              },
+              dataType : "json",
+              cache   : false,
+              success  : function(result, status){
+                  alert("주문이 취소 되었습니다.");
+                  /* 알림 내용이 뜬 후 링크로 다시 돌아간다 .*/
+                  location.href='/orders/' + [[${page}]];
+              },
+              error : function(jqXHR, status, error){
+                  if(jqXHR.status == '401'){
+                      alert('로그인 후 이용해주세요');
+                      location.href='/members/login';
+                  } else{
+                      alert(jqXHR.responseText);
+                  }
+              }
+          });
+      }
+
+    $(document).ready(function () {
+           $('.carousel').carousel({
+               interval: 4000,
+               pause: "hover",
+               wrap: true,
+               keyboard : true
+           });
+       });
+
+
+       function openNav() {
+         document.getElementById("mySidebar").style.width = "250px";
+         document.getElementById("main").style.marginLeft = "250px";
+       }
+
+       function closeNav() {
+         document.getElementById("mySidebar").style.width = "0";
+         document.getElementById("main").style.marginLeft= "0";
+       }
+
+  </script>
+</th:block>
+<th:block layout:fragment="css">
+  <style>
+    .content-mg{
+      margin-left:30%;
+      margin-right:30%;
+      margin-top:2%;
+      margin-bottm:100px;
+    }
+    .repImgDiv{
+      margin-right:15px;
+      margin-left:15px;
+      height:auto;
+    }
+    .repImg{
+      height:100px;
+      width:100px;
+    }
+    .card1{
+      width:750px;
+      height:100%;
+      padding:30px;
+      margin-bottom:20px;
+    }
+    .fs18{
+        font-size:18px;
+    }
+    .fs24{
+      font-size:24px;
+    }
+  </style>
+
+
+</th:block>
+
+<div layout:fragment="content" >
+
+  <h2 class="mb-4">
+    주문 내역
+  </h2>
+
+  <div th:each="order : ${orders.getContent()}">
+
+    <div class="d-flex mb-3 align-self-center">
+      <h4 th:text="${order.orderDate} + ' 주문'"></h4>
+      <div class="ml-3">
+        <th:block th:if="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER}">
+          <button type="button" class="btn btn-outline-secondary"
+                  th:value="${order.orderId}" onclick="cancelOrder(this.value)">주문취소</button>
+        </th:block>
+        <th:block th:unless="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER}">
+          <h6 style="margin-top : 6px">(취소 완료)</h6>
+        </th:block>
+      </div>
+    </div>
+    <div class="card1 d-flex">
+      <div th:each="orderItem : ${order.orderItemDtoList}" class="d-flex mb-3">
+        <div class="repImgDiv">
+          <img th:src="${orderItem.imgUrl}" class = "rounded repImg" th:alt="${orderItem.itemNm}">
+        </div>
+        <div class="align-self-center w-75">
+          <span th:text="${orderItem.itemNm}" class="fs24 font-weight-bold"></span>
+          <div class="fs18 font-weight-light">
+            <span th:text="${orderItem.orderPrice} +'원'"></span>
+            <span th:text="${orderItem.count} +'개'"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div th:with="start=${(orders.number/maxPage)*maxPage + 1}, end=(${(orders.totalPages == 0) ? 1 : (start + (maxPage - 1) < orders.totalPages ? start + (maxPage - 1) : orders.totalPages)})" >
+    <ul class="pagination justify-content-center">
+
+      <li class="page-item" th:classappend="${orders.number eq 0}?'disabled':''">
+        <a th:href="@{'/orders/' + ${orders.number-1}}" aria-label='Previous' class="page-link">
+          <span aria-hidden='true'>Previous</span>
+        </a>
+      </li>
+
+      <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${orders.number eq page-1}?'active':''">
+        <a th:href="@{'/orders/' + ${page-1}}" th:inline="text" class="page-link">[[${page}]]</a>
+      </li>
+
+      <li class="page-item" th:classappend="${orders.number+1 ge orders.totalPages}?'disabled':''">
+        <a th:href="@{'/orders/' + ${orders.number+1}}" aria-label='Next' class="page-link">
+          <span aria-hidden='true'>Next</span>
+        </a>
+      </li>
+
+    </ul>
+  </div>
+
+</div>
+
+</html>

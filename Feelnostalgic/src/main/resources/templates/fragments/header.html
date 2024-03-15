@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/layout1}">
+<title>Feel nostalgic</title>
+<meta charset="UTF-8">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<div th:fragment="header" id="header" >
+    <nav class="nav-wrap">
+        <div class="nav-container">
+
+            <div id="mySidebar" class="sidebar">
+
+                <ul class="navbar-wrap">
+                    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                    <a href="/about">About</a>
+                    <a href="/items/LP">LP</a>
+                    <a href="/items/LPPLAYER">LpPlayer</a>
+                    <a href="/board">Contact</a>
+                    <a href="/announcement">공지사항</a>
+                </ul>
+            </div>
+
+            <div id="main">
+                <button class="openbtn" onclick="openNav()">☰ Open</button>
+            </div>
+            <a class="navbar-brand" href="/" style="font-size:20px">Feel nostalgic</a>
+
+            <form class="d-flex" th:action="@{/}" method="get"> <!--검색 구간  -->
+                <input name="searchQuery" class="form-control me-2" type="search"
+                       placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Search</button>
+            </form>
+
+            <div class="rgt">
+                <ul class="navbar-wrap">
+                    <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+                        <a class="nav-link" href="/admin/item/new">상품 등록</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
+                        <a class="nav-link" href="/admin/items">상품관리</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/cart">장바구니</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/orders">구매이력</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/mypage">Mypage</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAnonymous()">
+                        <a class="nav-link" href="/members/login" style="font-size:20px">LogIn</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/members/logout"  id="logoutLink">LogOut</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </nav>
+</div>
+</body>
+</html>

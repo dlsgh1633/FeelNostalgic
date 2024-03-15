@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/layout1}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<title>Feel nostalgic</title>
+<meta charset="UTF-8">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="../../static/css/layout1.css" rel="stylesheet">
+    <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Roboto&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<style>
+
+</style>
+</head>
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        function showPasswordPopup() {
+            document.getElementById('passwordPopup').style.display = 'block';
+        }
+
+        function checkPasswordAndProceed() {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var enteredPassword = document.getElementById('password').value;
+
+            $.ajax({
+                type: 'POST',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                url: '/board/checkPassword',
+                data: { postId: /*[[${board.id}]]*/, password: enteredPassword },
+                success: function (response) {
+                    if (response.success) {
+                        window.location.href = '/board/update/' + /*[[${board.id}]]*/;
+                    } else {
+                        alert('비밀번호가 일치하지 않습니다.');
+                    }
+                },
+                error: function (error) {
+                    console.error('비밀번호 확인 실패:', error);
+                }
+            });
+        }
+
+        function deletePasswordPopup() {
+            document.getElementById('passwordPopup1').style.display = 'block';
+        }
+
+        function deleteBoardAndProceed() {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var enteredPassword = document.getElementById('password1').value;
+
+            $.ajax({
+                type: 'POST',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                url: '/board/checkPassword',
+                data: { postId: /*[[${board.id}]]*/, password: enteredPassword },
+                success: function (response) {
+                    if (response.success) {
+                        alert('게시글을 삭제하였습니다');
+                        var form = document.getElementById('deleteForm');
+                        form.submit();
+                    } else {
+                        alert('비밀번호가 일치하지 않습니다.');
+                    }
+                },
+                error: function (error) {
+                    console.error('비밀번호 확인 실패:', error);
+                }
+            });
+        }
+             $(document).ready(function () {
+            $('.carousel').carousel({
+                interval: 4000,
+                pause: "hover",
+                wrap: true,
+                keyboard : true
+            });
+        });
+
+
+        function openNav() {
+          document.getElementById("mySidebar").style.width = "250px";
+          document.getElementById("main").style.marginLeft = "250px";
+        }
+
+        function closeNav() {
+          document.getElementById("mySidebar").style.width = "0";
+          document.getElementById("main").style.marginLeft= "0";
+        }
+    </script>
+
+    <script th:inline="javascript">
+        $(function(){
+           $('.nav-wrap, .content').addClass('sub');
+        });
+
+
+       $(document).ready(function(){
+          loadComments();
+       });
+
+
+
+        function loadComments() {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            const id = [[${board.id}]];
+
+            $.ajax({
+                type: 'GET',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                url: "/getByBoardId/" + id,
+                success: function (response) {
+                    appendComment(response);
+                     response.forEach(function(comment) {
+                       loadReplies(comment.id);
+
+                   });
+
+                },
+                error: function (error) {
+                    console.error('댓글 불러오기 실패:', error);
+                    }
+                });
+            }
+
+
+
+
+           function loadReplies(commentId) {
+               var token = $("meta[name='_csrf']").attr("content");
+               var header = $("meta[name='_csrf_header']").attr("content");
+
+               $.ajax({
+                   type: 'GET',
+                   beforeSend: function (xhr) {
+                       xhr.setRequestHeader(header, token);
+                   },
+                   url: "/getByCommentId/" + commentId,
+                  data: { boardId: /*[[${board.id}]]*/, commentId: commentId },
+                                  success: function (response) {
+                   console.log("대댓글 불러오기 성공");
+                   console.log("대댓글 데이터:", response);
+                   var filteredReplies = response.filter(function(reply) {
+                       var isMatch = reply.parentId === commentId;
+                       console.log("대댓글 ID:", reply.id, "부모 ID:", reply.parentId, "현재 댓글 ID:", commentId, "일치 여부:", isMatch);
+                       return isMatch;
+                   });
+                   appendReply(filteredReplies, 'ReplySection_' + commentId);
+               },
+                   error: function (error) {
+                       console.error('대댓글 불러오기 실패:', error);
+                       console.error(commentId);
+                   }
+               });
+           }
+
+        function CommentSubmit() {
+            var CommentWriter = $('#CommentWriter').val();
+            var CommentContent = $('#CommentContent').val();
+            var BoardId = $('#boardId').val();
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            $.ajax({
+                type: 'POST',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                url: '/save',
+                data: {
+                    CommentWriter: CommentWriter,
+                    CommentContent: CommentContent,
+                    BoardId: BoardId
+                },
+                success: function(response) {
+                    appendComment(response);
+                    $('#CommentWriter').val('');
+                    $('#CommentContent').val('');
+                },
+                error: function(error) {
+                    console.error('댓글 저장 실패:', error);
+                }
+            });
+        }
+
+        function appendComment(comments) {
+            console.log(comments);
+            $('#CommentSection').empty();
+            comments.forEach(function(comment) {
+                 var replySectionId = 'ReplySection_' + comment.id;
+                 console.log("appendComment " +replySectionId);
+                console.log("comment 아이디 체크" + comment);
+                var newCommentHtml = '<li class="comment">' +
+                '<div class="comment-header">' +
+                    '<strong>작성자: ' + comment.commentWriter + '</strong>' +
+                    '<span class="comment-date">' + comment.commentCreatedTime + '</span>' +
+                '</div>' +
+                '<div class="comment-body">' +
+                    '<p class="comment-content">내용: ' + comment.commentContent + '</p>' +
+                '</div>' +
+                '<div id="' + replySectionId + '" class="reply-section"></div>' +
+                '<form class="replyForm" method="post" action="/savereply" id="replyForm_' + comment.id + '">' +
+                '<table>' +
+                '<tr>' +
+                '<td>작성자</td>' +
+                '<td><input type="text" name="ReplyWriter" class="ReplyWriter" id="ReplyWriter_' + comment.id + '"></td>' +
+                '<td>내용</td>' +
+                '<td><input type="text" name="ReplyContent" class="ReplyContent" id="ReplyContent_' + comment.id + '"></input></td>' +
+                '<td><input type="hidden" name="commentId" id="commentId_' + comment.id + '" value="' + comment.id + '"></td>' +
+                '<td><button type="button" onclick="ReplySubmit(' + comment.id + ')">대댓글 작성</button></td>' +
+                '</tr>' +
+                '</table>' +
+                '</form>' +
+                '</li>';
+
+                $('#CommentSection').append(newCommentHtml);
+                 loadReplies(comment.id);
+                $('#ReplyWriter').val('');
+                $('#ReplyContent').val('');
+            });
+            $('#CommentWriter').val('');
+            $('#CommentContent').val('');
+
+           }
+
+        function ReplySubmit(commentId) {
+           var replySectionId = 'ReplySection_' + commentId;
+           console.log("ReplySubmit"+replySectionId);
+            var ReplyWriter = $('#ReplyWriter_' + commentId).val();
+            var ReplyContent = $('#ReplyContent_' + commentId).val();
+            var BoardId = $('#boardId').val();
+            var CommentId = $('#commentId_' + commentId).val();
+
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+            var Comment = { id: commentId };
+
+            $.ajax({
+                type: 'POST',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                url: '/savereply',
+                data: {
+                    ReplyWriter: ReplyWriter,
+                    ReplyContent: ReplyContent,
+                    boardId: BoardId,
+                    commentId: CommentId
+                },
+                success: function(response) {
+                    appendReply(response,replySectionId);
+                     $('#ReplyWriter_' + commentId).val('');
+                    $('#ReplyContent_' + commentId).val('');
+                },
+                error: function(error) {
+                    console.error('대댓글 저장 실패:', error);
+                    console.log("댓글아이디 " + CommentId);
+                    console.log("댓글아이디 " + BoardId);
+                }
+            });
+        }
+
+        function appendReply(replys,replySectionId) {
+            console.log(replys);
+            console.log("appendReply" + replySectionId);
+            $('#' + replySectionId).empty();
+            replys.forEach(function(reply) {
+                console.log(reply);
+                var newReplyHtml = '<div class="reply">' +
+                    '<p><strong>' +'⤷ 작성자 : '+reply.replyWriter + '</strong> ' + '내용 :               '+reply.replyContent + '</p>' +
+                    '</div>';
+               $('#' + replySectionId).append(newReplyHtml);
+            });
+        }
+    </script>
+</th:block>
+<body>
+<div layout:fragment="content">
+    <h1 class="content-title">문의사항 상세 페이지</h1>
+    <div class="table-containerB">
+        <table border="1" cellpadding="0" cellspacing="0" class="table" width="500">
+            <tbody class="table-group-divider">
+            <h1>제목: <span th:text="${board.title}"></span></h1>
+            <p>작성자: <span th:text="${board.name}"></span></p>
+            <p>내용: <span th:text="${board.content}"></span></p>
+            <div>
+                <img class="rounded mgb-15"
+                     height="auto" th:if="${not #strings.isEmpty(board.imgUrl)}" th:src="${board.imgUrl}" width="800">
+            </div>
+            </tbody>
+        </table>
+    </div>
+    <p>
+    <form id="deleteForm" method="post" th:action="@{'/board/delete?id=' + ${board.id}}">
+        <button class="btn-other" onclick="deletePasswordPopup()" type="button">삭제</button>
+        <div id="passwordPopup1" style="display: none;">
+            <label for="password">비밀번호 입력:</label>
+            <input id="password1" type="password">
+            <button onclick="deleteBoardAndProceed()" type="button">확인</button>
+            <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+        </div>
+        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+    </form>
+    <form method="get" th:action="@{'/board/update/' + ${board.id}}">
+        <button class="btn-other" onclick="showPasswordPopup()" type="button">수정</button>
+        <div id="passwordPopup" style="display: none;">
+            <label for="password">비밀번호 입력:</label>
+            <input id="password" type="password">
+            <button onclick="checkPasswordAndProceed()" type="button">확인</button>
+            <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+        </div>
+    </form>
+    <form action="/save" id="myform" method="post" th:object="${commentDto}">
+        <table>
+            <tr>
+                <td>작성자</td>
+                <td><input class="commentinput" id="CommentWriter" name="CommentWriter" type="text"></td>
+                <td>내용</td>
+                <td><input class="commentinput" id="CommentContent" name="CommentContent" type="text"></td>
+                <td><input id="boardId" name="boardId" th:value="${board.id}" type="hidden"></td>
+                <td>
+                    <button class="commentsub" onclick="CommentSubmit()" type="button">댓글 작성</button>
+                </td>
+                <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+            </tr>
+        </table>
+    </form>
+    <div>
+        <div class="comment-section" id="CommentSection"></div>
+    </div>
+</div>
+<div class="footer" th:fragment="content"></div>
+</body>
+</html>

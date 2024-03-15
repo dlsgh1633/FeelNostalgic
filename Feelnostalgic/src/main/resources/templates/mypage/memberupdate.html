@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/layout1}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<title>Feel nostalgic</title>
+<meta charset="UTF-8">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Roboto&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+
+        $(function(){
+           $('.nav-wrap, .content').addClass('sub');
+       });
+
+       $(document).ready(function () {
+           $('.carousel').carousel({
+               interval: 4000,
+               pause: "hover",
+               wrap: true,
+               keyboard : true
+           });
+       });
+
+
+       function openNav() {
+         document.getElementById("mySidebar").style.width = "250px";
+         document.getElementById("main").style.marginLeft = "250px";
+       }
+
+       function closeNav() {
+         document.getElementById("mySidebar").style.width = "0";
+         document.getElementById("main").style.marginLeft= "0";
+       }
+
+    </script>
+    <script src='http://dmaps.daum.net/map_js_init/postcode.v2.js'></script>
+    <script>
+        function findAddr() {
+              new daum.Postcode({
+                  oncomplete: function(data) {
+
+                      var addr = '';
+                      var extraAddr = '';
+
+
+                      if (data.userSelectedType === 'R') {
+                          addr = data.roadAddress;
+                      } else {
+                          addr = data.jibunAddress;
+                      }
+                      if(data.userSelectedType === 'R'){
+
+                          if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                              extraAddr += data.bname;
+                          }
+
+                          if(data.buildingName !== '' && data.apartment === 'Y'){
+                              extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                          }
+
+                          if(extraAddr !== ''){
+                              extraAddr = ' (' + extraAddr + ')';
+                          }
+
+                          document.getElementById("detail").value = extraAddr;
+
+                      } else {
+                          document.getElementById("detail").value = '';
+                      }
+                      document.getElementById('zipcode').value = data.zonecode;
+                      document.getElementById("street").value = addr;
+                      document.getElementById("detail").focus();
+                  }
+              }).open();
+          }
+    </script>
+</th:block>
+<th:block layout:fragment="css">
+    <style>
+        body, h1,h2,h3,h4,h5,h6 {
+        font-family: 'Roboto', sans-serif;
+        font-family: 'Kalam', cursive;
+    }
+
+        .w3-row-padding img {margin-bottom: 12px}
+
+        .w3-sidebar {width: 120px;background: #222;}
+
+        #main {margin-left: 120px}
+
+        @media only screen and (max-width: 600px) {#main {margin-left: 0}}
+
+    </style>
+</th:block>
+<body>
+<div layout:fragment="content" style="min-width: 700px; max-width: 900px; margin: 50px auto 100px auto;">
+
+
+    <div class="w3-padding-large" id="main">
+        <div class="w3-content w3-justify w3-text-grey w3-padding-20" id="about">
+            <h2 class="w3-text-light-grey">회원 정보 수정 </h2>
+            <hr class="w3-opacity" style="width:200px">
+            <form method="post" th:action="@{/update}" th:object="${memberForm}">
+                이름: <input th:field="*{name}" type="text"/><br>
+
+                <div class="form-group">
+                    <label th:for="zipcode">우편번호</label>
+                    <input class="form-control" placeholder="우편번호를 입력하세요" th:field="*{zipcode}" type="text">
+                    <input class="btn-other" onclick="findAddr()" type="button" value="우편번호 찾기"><br>
+                </div>
+
+                <div class="form-group">
+                    <label th:for="street">도로명 주소</label>
+                    <input class="form-control" placeholder="도로명 주소를 입력하세요." th:field="*{street}" type="text">
+                </div>
+
+                <div class="form-group">
+                    <label th:for="detail">상세 주소</label>
+                    <input class="form-control" placeholder="상세 주소를 입력하세요." th:field="*{detail}" type="text">
+                </div>
+
+                <div class="form-group">
+                    <label th:for="tel">전화번호</label>
+                    <input class="form-control" placeholder="전화번호를 입력해주세요." th:field="*{tel}" type="text">
+                    <p class="fieldError" th:errors="*{tel}" th:if="${#fields.hasErrors('tel')}">Incorrect date</p>
+                </div>
+
+                <input type="submit" value="정보 업데이트"/>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="footer" th:fragment="content"></div>
+</body>
+</html>

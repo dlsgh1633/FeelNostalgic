@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/layout1}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<title>Feel nostalgic</title>
+<meta charset="UTF-8">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Roboto&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<th:block layout:fragment="css">
+    <style>
+        .error{
+          color: #bd2130;
+         }
+
+        .loginForm {
+            width: 500px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            background-color: #fff;
+            border-radius: 25px;
+            color: #000;
+        }
+
+        .social-btn {
+            margin-top: 26px;
+            padding-top: 30px;
+            border-top: 1px solid #DEE2E6;
+        }
+
+        .social-btn .login-btn {
+            display: block;
+            margin-bottom: 14px;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid rgba(0,0,0,0.2);
+            font-weight: 600;
+            background-repeat:no-repeat;
+            text-indent: 56px;
+        }
+
+        .social-btn .google-login {
+            color:#5F6368;
+            background-size: 25px;
+            background-position: 134px;
+            text-indent: 41px;
+        }
+
+        .social-btn .naver-login {
+            background-color: #06BD34;
+            color:#fff;
+            background-size: 43px;
+            background-position: 124px;
+        }
+
+        .social-btn .kakao-login {
+            background-color:#FAE100;
+            color:#3B1E1E;
+            background-size: 28px;
+            background-position: 131px;
+        }
+                .btn-save {
+            padding: 7px 14px;
+            width: auto;
+            border: none;
+            border-radius: 6px;
+            background-color: #000;
+            color: #fff;
+        }
+                .btn-other {
+            padding: 7px 14px;
+            width: auto;
+            border: 1px solid #999;
+            border-radius: 6px;
+            background-color: #fff;
+            color: #000;
+        }
+        .content-title {
+           font-weight: bold;
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        $(function(){
+            $('.nav-wrap, .content').addClass('sub');
+        });
+
+         $(document).ready(function () {
+            $('.carousel').carousel({
+                interval: 4000,
+                pause: "hover",
+                wrap: true,
+                keyboard : true
+            });
+        });
+
+
+        function openNav() {
+          document.getElementById("mySidebar").style.width = "250px";
+          document.getElementById("main").style.marginLeft = "250px";
+        }
+
+        function closeNav() {
+          document.getElementById("mySidebar").style.width = "0";
+          document.getElementById("main").style.marginLeft= "0";
+        }
+
+    </script>
+</th:block>
+
+<body class="w3-black">
+<div layout:fragment="content">
+    <div class="loginForm">
+        <h2 class="content-title">로그인</h2>
+        <form action="/members/login" method="post" role="form">
+            <div class="form-group mb-3">
+                <label class="mb-2" th:for="email">이메일 주소</label>
+                <input class="form-control" name="email" placeholder="이메일을 입력해주세요." type="email">
+            </div>
+            <div class="form-group">
+                <label class="mb-2" th:for="password">비밀번호</label>
+                <input class="form-control" name="password" placeholder="비밀번호 입력" type="password">
+            </div>
+            <p class="error" th:if="${loginErrorMsg}" th:text="${loginErrorMsg}"></p>
+
+            <div class="btns mt-3 text-center">
+                <button class="btn-save">로그인</button>
+                <button class="btn-other" onclick="location.href='/members/new'" type="button">회원가입</button>
+            </div>
+            <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+        </form>
+        <div class="social-btn">
+            <a class="login-btn google-login" href="/oauth2/authorization/google"
+               th:style="'background-image: url(/img/google-login.png)'">구글 아이디로 로그인</a>
+            <a class="login-btn naver-login" href="/oauth2/authorization/naver"
+               th:style="'background-image: url(/img/naver-login.png)'">네이버 아이디로 로그인</a>
+            <a class="login-btn kakao-login" href="/oauth2/authorization/kakao"
+               th:style="'background-image: url(/img/kakao-login.png)'">카카오 아이디로 로그인</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

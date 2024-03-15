@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/layout1}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<title>Feel nostalgic</title>
+<meta charset="UTF-8">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Roboto&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+        $(function(){
+           $('.nav-wrap, .content').addClass('sub');
+       });
+
+       $(document).ready(function () {
+           $('.carousel').carousel({
+               interval: 4000,
+               pause: "hover",
+               wrap: true,
+               keyboard : true
+           });
+       });
+
+
+       function openNav() {
+         document.getElementById("mySidebar").style.width = "250px";
+         document.getElementById("main").style.marginLeft = "250px";
+       }
+
+       function closeNav() {
+         document.getElementById("mySidebar").style.width = "0";
+         document.getElementById("main").style.marginLeft= "0";
+       }
+
+         document.addEventListener('DOMContentLoaded', function() {
+           var images = [
+             '/img/R4AD.gif',
+             '/img/1.gif',
+             '/img/2.gif'
+           ];
+
+               var mdimages = [
+             '/img/modal1.jpg',
+             '/img/modal2.jpg',
+             '/img/modal3.jpg'
+           ];
+
+           var currentIndex = 0;
+
+           setInterval(function() {
+             currentIndex = (currentIndex + 1) % images.length;
+             document.getElementById('rotating-image').src = images[currentIndex];
+             document.getElementById('rotating-modalimg').src = mdimages[currentIndex];
+
+           }, 5000);
+
+
+
+           var modal = document.getElementById("myModal");
+           modal.style.display = "block";
+
+
+           var span = document.getElementsByClassName("close")[0];
+           if (span) {
+               span.onclick = function() {
+                   modal.style.display = "none";
+               }
+           }
+
+
+         });
+$(document).ready(function() {
+    $("#loginForm").on("submit", function(e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: $(this).attr("action"),
+            type: $(this).attr("method"),
+            data: $(this).serialize(),
+            success: function(response) {
+                localStorage.setItem("isLoggedIn", "true");
+
+                $("#myModal").hide();
+                 window.location.reload(true);
+            },
+            error: function(xhr, status, error) {
+
+                alert("Login failed: " + xhr.responseText);
+            }
+        });
+    });
+    });
+   $(document).ready(function() {
+    var isLoggedIn = localStorage.getItem("isLoggedIn");
+     console.log(isLoggedIn);
+    if (isLoggedIn === "true") {
+
+        $("#myModal").hide();
+    } else {
+
+        $("#myModal").show();
+    }
+});
+document.addEventListener('DOMContentLoaded', function() {
+    var logoutLink = document.getElementById('logoutLink');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = '/members/logout';
+        });
+    }
+});
+    </script>
+</th:block>
+<th:block layout:fragment="css">
+    <style>
+
+        h3{
+            margin-top : -20px;
+
+        }
+            .w3-row-padding img {margin-bottom: 12px}
+
+            .w3-sidebar {width: 120px;background: #222;}
+
+            #main {margin-left: 120px}
+
+            @media only screen and (max-width: 600px) {#main {margin-left: 0}}
+
+            .card{
+                background-color: gray;
+                width: 300px;
+            }
+
+            #about{
+                margin-left: -145px;
+            }
+
+            .card-body{
+                min-height: 280px;
+
+            }
+
+            .col-md-4 {
+            flex: 0 0 auto;
+            width: 33.33333333%;
+            padding-bottom: 10px;
+            }
+
+            .row {
+            --bs-gutter-x: 15rem;
+            --bs-gutter-y: 0;
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: calc(-1 * var(--bs-gutter-y));
+            margin-right: calc(-.5 * var(--bs-gutter-x));
+            margin-left: calc(-.5 * var(--bs-gutter-x));
+        }
+
+                   .row1 {
+                  display: flex;
+                  flex-wrap: nowrap;
+                  width: 100%;
+                  align-items: stretch;
+
+                }
+                .mainimg {
+              width: 800px;
+              height: auto;
+              display: block;
+              margin: 0;
+            }
+
+                #main {
+              margin: 0;
+              padding: 0;
+              max-width: 100vw;
+            }
+            p {
+                font-size:20px;
+            }
+
+
+
+
+
+
+
+        .modal {
+          display: none;
+          position: fixed;
+          z-index: 2;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          overflow: auto;
+
+          background-color: rgba(0,0,0,0.4);
+        }
+
+
+        .modal-content {
+          display: flex;
+          flex-direction: row;
+          align-items: stretch;
+          justify-content: space-between;
+
+          background-color: #fefefe;
+          margin: 5% auto;
+
+
+          width: 960px;
+          height: 500px;
+          z-index: 3;
+        }
+
+
+
+        .close {
+         position: absolute;
+          top: 0;
+          right: 0;
+          color: #aaa;
+          padding: 10px;
+          font-size: 28px;
+          font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+          color: black;
+          text-decoration: none;
+          cursor: pointer;
+        }
+
+
+        .modalright {
+          width: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .modalp{
+            color:black;
+        }
+        .modalright img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .modalleft {
+          width: 50%;
+          padding: 20px;
+          box-sizing: border-box;
+        }
+
+        .w3-input {
+          margin-top: 10px;
+          padding: 10px;
+        }
+
+        .w3-button {
+          margin-top: 20px;
+          width: 100%;
+          padding: 10px;
+        }
+
+        .w3-content {
+          max-width: none;
+        }
+
+        .content {
+            padding-bottom: 100px;
+        }
+        .card-title {
+            margin-bottom: var(--bs-card-title-spacer-y);
+            color: var(--bs-card-title-color);
+            font-weight : bold;
+        }
+
+
+    </style>
+</th:block>
+<body class="w3-black">
+<div layout:fragment="content" style="min-width: 700px; max-width: 900px; margin:50px 400px auto;">
+    <!-- Page Content -->
+    <div class="w3-padding-large" id="main">
+        <!-- Header/Home -->
+        <header class="w3-container w3-padding-32 w3-center w3-black" id="home">
+
+            <div class="row1">
+                <div class="column">
+                    <div class="w3-content w3-justify w3-text-grey w3-padding-20" id="about">
+                        <h2 class="w3-text-light-grey">Feel nostalgic...</h2>
+                        <hr class="w3-opacity" style="width:200px">
+                        <p>Feel nostalgic .. Do you want to look back on the good old days? Experience it through LPs
+                            and Records! The nostalgic scent will find you.
+                            This is a shopping mall that sells pop songs, classical music, domestic music, and records.
+                            Enjoy your memories as much as you want.
+                            And you will be able to listen to not only the past but also your favorite music on records.
+                            I sincerely pray that you have a pleasant trip. thank you
+                        </p>
+                    </div>
+                </div>
+                <div class="column">
+                    <img alt="" class="mainimg" height="508" id="rotating-image" th:src="@{/img/R4AD.gif}" width="500">
+                </div>
+            </div>
+
+        </header>
+    </div>
+    <!--Modal로 뛰우자. -->
+    <div class="w3-content w3-justify w3-text-grey w3-padding-20">
+        <h2 class="w3-text-light-grey">바이닐(LP)을 사는 것이 현명한 소비일까?</h2>
+        <hr class="w3-opacity" style="width:200px">
+        <p>취미 생활에 현명한 소비를 따지는 게 이상하지만 취미에 현명한 소비가 어딨어 바이닐(LP)을 사는 것은 오늘날 유일하게 투자 대비 수익이 돌아오는 음원 구입이다. 디지털 음원은 재판매할 수도
+            없고(resell),
+            CD조차도 대부분의 경우 중고시장에서 거의 가치가 없다.
+            그러나 바이닐(LP)은 다르다. 바이닐(LP)이 새 것이든, 오래된 것이든 많은 가치를 지니고 있으며 보관 상태가 훌륭하고 타이틀에 대한 수요만 있다면 팔았을 때 충분히 돈이 된다.
+            물론 돈을 벌기 위해 바이닐(LP)을 사진 않겠지만-돈을 버는 데에는 더 쉽고 더 좋은 방법들이 있다-돈을 벌어야 할 경우에 당신의 컬렉션을 팔면 된다는 걸 알고 있으면 도움이 될 것이다.
+        </p>
+    </div>
+
+
+    <div class="modal" id="myModal">
+
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modalleft">
+                <div class="w3-content w3-justify w3-text-black w3-padding-20" id="modalLoginForm">
+                    <h2 class="w3-text-black">Join Still</h2>
+                    <p>Start a free account. No credit card needed.</p>
+                    <form action="/members/login" id="loginForm" method="post">
+                        <input class="w3-input w3-border" name="email" placeholder="Email" type="text">
+                        <input class="w3-input w3-border" name="password" placeholder="Password" type="password">
+                        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+                        <button class="w3-button w3-black w3-section" onclick="modalLoginForm()">Log In</button>
+                        <p>Don't have an account? <a href="/members/new">Register here</a>.</p>
+                    </form>
+                </div>
+            </div>
+            <div class="modalright">
+                <img alt="" class="modalimg" height="508" id="rotating-modalimg" th:src="@{/img/modal1.jpg}"
+                     width="500">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="w3-padding-64 w3-content" id="photos">
+        <h2 class="w3-text-light-grey">Want?</h2>
+        <hr class="w3-opacity" style="width:200px">
+
+
+        <div class="w3-row-padding" style="margin:0 -16px">
+            <div>
+                <input name="searchQuery" th:value="${itemSearchDto.searchQuery}" type="hidden">
+                <div class="center" th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}">
+                    <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + ' 검색 결과'"></p>
+                </div>
+
+                <div class="row">
+                    <th:block th:each="item, status: ${items.getContent()}">
+                        <div class="col-md-4 margin">
+                            <div class="card">
+                                <a class="text-dark" th:href="'/item/' +${item.id}">
+                                    <img class="card-img-top" height="300" th:alt="${item.itemNm}"
+                                         th:src="${item.imgUrl}">
+                                    <div class="card-body">
+                                        <h4 class="card-title">[[${item.itemNm}]]</h4>
+                                        <p class="card-text">[[${item.itemDetail}]]</p>
+                                        <h3 class="card-title text-danger">[[${item.price}]]원</h3>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div th:with="start=${(items.number/maxPage)*maxPage + 1}, end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})">
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item" th:classappend="${items.number eq 0}?'disabled':''">
+                <a aria-label='Previous'
+                   class="page-link" th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number-1}}">
+                    <span aria-hidden='true'><</span>
+                </a>
+            </li>
+
+            <li class="page-item" th:classappend="${items.number eq page-1}?'active':''"
+                th:each="page: ${#numbers.sequence(start, end)}">
+                <a class="page-link"
+                   th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${page-1}}" th:inline="text">[[${page}]]</a>
+            </li>
+
+            <li class="page-item" th:classappend="${items.number+1 ge items.totalPages}?'disabled':''">
+                <a aria-label='Next'
+                   class="page-link" th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number+1}}">
+                    <span aria-hidden='true'>></span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+
+
+</div>
+</div>
+<div class="footer" th:fragment="content"></div>
+</body>
+</html>

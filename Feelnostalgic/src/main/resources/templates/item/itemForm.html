@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/layout1}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<title>Feel nostalgic</title>
+<meta charset="UTF-8">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Roboto&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+
+        $(function(){
+           $('.nav-wrap, .content').addClass('sub');
+       });
+
+
+
+       $(document).ready(function(){
+           var errorMessage = [[${errorMessage}]];
+           if(errorMessage != null){
+               alert(errorMessage);
+           }
+
+           bindDomEvent();
+       });
+
+       function bindDomEvent(){
+
+           $(".imageFile.form-control").on("change", function(){
+
+               var fileName = $(this).val().split("\\").pop();
+               var fileExt = fileName.substring(fileName.lastIndexOf(".")+1);
+               fileExt = fileExt.toLowerCase();
+
+               if(fileExt != "jpg" && fileExt != "jpeg" && fileExt != "gif"
+               && fileExt != "png" && fileExt != "bmp"){
+                   alert("이미지 파일만 등록이 가능합니다.");
+                   $(this).val("");
+                   return;
+               }
+           });
+       }
+
+        $(document).ready(function () {
+           $('.carousel').carousel({
+               interval: 4000,
+               pause: "hover",
+               wrap: true,
+               keyboard : true
+           });
+       });
+
+
+       function openNav() {
+         document.getElementById("mySidebar").style.width = "250px";
+         document.getElementById("main").style.marginLeft = "250px";
+       }
+
+       function closeNav() {
+         document.getElementById("mySidebar").style.width = "0";
+         document.getElementById("main").style.marginLeft= "0";
+       }
+
+    </script>
+</th:block>
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .input-group{
+            margin-bottom : 15px;
+        }
+        .img-div{
+            margin-bottom : 10px;
+        }
+        .fieldError{
+            color : #bd2130;
+        }
+    </style>
+</th:block>
+<body>
+<div layout:fragment="content">
+    <form class="container" enctype="multipart/form-data" method="post" role="form" th:object="${itemFormDto}">
+        <p class="h2">상품 등록</p>
+
+        <input th:field="*{id}" type="hidden">
+
+        <div class="row mb-4">
+            <select class="form-select" th:field="*{itemSellStatus}">
+                <option value="SELL">판매중</option>
+                <option value="SOLD_OUT">품절</option>
+            </select>
+        </div>
+
+
+        <div class="row mb-4">
+            <select class="form-select" th:field="*{itemOption}">
+                <option value="LP">LP</option>
+                <option value="LPPLAYER">LPPLAYER</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">상품명</span>
+            </div>
+            <input class="form-control" placeholder="상품명을 입력해주세요." th:field="*{itemNm}" type="text">
+        </div>
+
+        <p class="fieldError" th:errors="*{itemNm}" th:if="${#fields.hasErrors('itemNm')}">Incorrect data</p>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">가격</span>
+            </div>
+            <input class="form-control" placeholder="상품의 가격을 입력해주세요." th:field="*{price}" type="number">
+        </div>
+        <p class="fieldError" th:errors="*{price}" th:if="${#fields.hasErrors('price')}">Incorrect data</p>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">재고</span>
+            </div>
+            <input class="form-control" placeholder="상품의 재고를 입력해주세요." th:field="*{stockNumber}" type="number">
+        </div>
+        <p class="fieldError" th:errors="*{stockNumber}" th:if="${#fields.hasErrors('stockNumber')}">Incorrect data</p>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">상품 상세 내용</span>
+            </div>
+            <textarea aria-label="With textarea" class="form-control" th:field="*{itemDetail}"></textarea>
+        </div>
+        <p class="fieldError" th:errors="*{itemDetail}" th:if="${#fields.hasErrors('itemDetail')}">Incorrect data</p>
+
+        <div th:if="${#lists.isEmpty(itemFormDto.itemImgDtoList)}">
+            <div class="row" th:each="num: ${#numbers.sequence(1,5)}">
+                <div class="input-group m3">
+                    <input class=" imageFile form-control" name="itemImgFile" type="file">
+                    <label class="image input-group-text" th:text="상품이미지 + ${num}"></label>
+                </div>
+            </div>
+        </div>
+        <div th:if="${not #lists.isEmpty(itemFormDto.itemImgDtoList)}">
+            <div class="row" th:each="itemImgDto, status: ${itemFormDto.itemImgDtoList}">
+                <div class="input-group m3">
+                    <input class="imageFile form-control" name="itemImgFile" type="file">
+                    <input name="itemImgIds" th:value="${itemImgDto.id}" type="hidden">
+                    <label class="image input-group-text" th:text="${not #strings.isEmpty(itemImgDto.oriImgName)} ?
+                    ${itemImgDto.oriImgName} : '상품이미지'+ ${status.index+1}"></label>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align : center" th:if="${#strings.isEmpty(itemFormDto.id)}">
+            <button class="btn btn-primary" th:formaction="@{/admin/item/new}" type="submit">저장</button>
+        </div>
+
+        <div style="text-align : center" th:unless="${#strings.isEmpty(itemFormDto.id)}">
+            <button class="btn btn-primary" th:formaction="@{'/admin/item/'+${itemFormDto.id}}" type="submit">수정
+            </button>
+        </div>
+
+        <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden">
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/layout1}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<title>Feel nostalgic</title>
+<meta charset="UTF-8">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Roboto&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<th:block layout:fragment="script">
+    <script type="text/javascript">
+        $(function(){
+           $('.nav-wrap, .content').addClass('sub');
+       });
+
+
+
+       $(document).ready(function () {
+           $('.carousel').carousel({
+               interval: 4000,
+               pause: "hover",
+               wrap: true,
+               keyboard : true
+           });
+       });
+
+
+       function openNav() {
+         document.getElementById("mySidebar").style.width = "250px";
+         document.getElementById("main").style.marginLeft = "250px";
+       }
+
+       function closeNav() {
+         document.getElementById("mySidebar").style.width = "0";
+         document.getElementById("main").style.marginLeft= "0";
+       }
+
+    </script>
+</th:block>
+<th:block layout:fragment="css">
+    <style>
+        body, h1,h2,h3,h4,h5,h6 {
+        font-family: 'Roboto', sans-serif;
+        font-family: 'Kalam', cursive;
+    }
+
+        .w3-row-padding img {margin-bottom: 12px}
+
+        .w3-sidebar {width: 120px;background: #222;}
+
+        #main {margin-left: 120px}
+
+        @media only screen and (max-width: 600px) {#main {margin-left: 0}}
+
+    </style>
+</th:block>
+<body class="w3-black">
+<div layout:fragment="content" style="min-width: 700px; max-width: 900px; margin: 50px auto 100px auto;">
+
+
+    <div class="w3-padding-large" id="main">
+        <div class="w3-content w3-justify w3-text-grey w3-padding-20" id="about">
+            <h2 class="w3-text-light-grey">My page</h2>
+            <hr class="w3-opacity" style="width:200px">
+            이름: <span th:text="${memberdto.name}"></span><br>
+            이메일: <span th:text="${memberdto.email}"></span><br>
+            주소 : <span th:text="${memberdto.street}"></span> <span th:text="${memberdto.detail}"></span><br>
+            연락처: <span th:text="${memberdto.tel}"></span><br>
+        </div>
+
+
+    </div>
+    <a class="btn-other1" th:href="@{/memberupdate}">회원 정보 수정</a>
+
+</div>
+<div class="footer" th:fragment="content"></div>
+</body>
+</html>

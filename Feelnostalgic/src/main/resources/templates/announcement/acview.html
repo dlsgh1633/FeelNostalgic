@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html layout:decorate="~{layouts/layout1}"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<title>Feel nostalgic</title>
+<meta charset="UTF-8">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
+    <link href="../../static/css/layout1.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Roboto&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<style>
+    .table img {
+        max-width: 100%;
+        max-height: 400px;
+        height: auto;
+    }
+
+    .table-container {
+        max-width: 800px;
+        overflow-x: auto;
+        margin-bottom: 15px;
+    }
+
+</style>
+</head>
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        $(function(){
+                    $('.nav-wrap, .content').addClass('sub');
+                });
+
+
+
+                 $(document).ready(function () {
+                $('.carousel').carousel({
+                    interval: 4000,
+                    pause: "hover",
+                    wrap: true,
+                    keyboard : true
+                });
+            });
+
+
+            function openNav() {
+              document.getElementById("mySidebar").style.width = "250px";
+              document.getElementById("main").style.marginLeft = "250px";
+            }
+
+            function closeNav() {
+              document.getElementById("mySidebar").style.width = "0";
+              document.getElementById("main").style.marginLeft= "0";
+            }
+    </script>
+</th:block>
+
+
+<body>
+<div layout:fragment="content">
+    <h1 class="content-title">공지사항 상세 화면</h1>
+    <div class="table-containerB">
+        <table border="1" cellpadding="0" cellspacing="0" class="table" width="500">
+            <tbody class="table-group-divider">
+            <h1>제목: <span th:text="${acboard.title}"></span></h1>
+            <p>작성자: <span th:text="${acboard.name}"></span></p>
+            <p>내용: <span th:text="${acboard.content}"></span></p>
+            <div>
+                <img class="rounded mgb-15"
+                     height="auto" th:if="${not #strings.isEmpty(acboard.imgUrl)}" th:src="${acboard.imgUrl}" width="800">
+            </div>
+            </tbody>
+        </table>
+    </div>
+
+    <form action="/announcement/delete" method="post">
+        <input name="_csrf" th:value="${_csrf.token}" type="hidden"/>
+        <input name="id" th:value="${acboard.id}" type="hidden"/>
+        <button class="btn-other" sec:authorize="hasAnyAuthority('ROLE_ADMIN')" type="submit">삭제</button>
+    </form>
+
+    <a class="btn-other" sec:authorize="hasAnyAuthority('ROLE_ADMIN')"
+       th:href="@{/announcement/acupdate/{id}(id = ${acboard.id})}">수정</a>
+</div>
+<div class="footer" th:fragment="content"></div>
+</body>
+</html>
