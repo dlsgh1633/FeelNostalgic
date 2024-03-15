@@ -71,14 +71,7 @@ public class BoardService {
         return memberRepository.findByEmail(prinEmail).orElseThrow();
     }
 
-    public List<BoardDto> findAll(String email) {
-        List<Board> boardEntityList = boardRepository.findAll();
-        List<BoardDto> boardDTOList = new ArrayList<>();
-        for (Board boardEntity : boardEntityList) {
-            boardDTOList.add(BoardDto.toBoardDTO(boardEntity));
-        }
-        return boardDTOList;
-    }
+
 
     public BoardDto findById(Long id) {
         Optional<Board> optionalBoardEntity = boardRepository.findById(id);
